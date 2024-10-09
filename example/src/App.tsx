@@ -1,11 +1,11 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, StyleSheet, Text, View } from 'react-native';
 import { PreventScreenshotView } from '../../src/PreventScreenshotView';
 
 export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.noProtected}>
-        <Text>no protec</Text>
+        <Text>no protected</Text>
       </View>
       <PreventScreenshotView
         style={styles.box}
@@ -16,6 +16,7 @@ export default function App() {
         <View style={styles.content}>
           <View style={styles.protected}>
             <Text>with protected</Text>
+            <Button title="Here click" onPress={() => Alert.alert('Hello')} />
           </View>
         </View>
       </PreventScreenshotView>

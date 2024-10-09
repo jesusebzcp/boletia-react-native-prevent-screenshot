@@ -55,11 +55,12 @@ public final class PreventScreenshotView : UIView {
   }
   
   private func setup() {
+    self.isUserInteractionEnabled = true
     
       // Configure the UITextField
       self.textField.isSecureTextEntry = true
       self.textField.textColor = .white.withAlphaComponent(0.1)
-      self.textField.isUserInteractionEnabled = false
+      self.textField.isUserInteractionEnabled = true
       self.textField.translatesAutoresizingMaskIntoConstraints = false
       super.addSubview(self.textField)
 
@@ -68,11 +69,13 @@ public final class PreventScreenshotView : UIView {
       self.textField.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
       self.textField.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
       self.textField.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+  
 
       // Get the secure container view of the UITextField
       if let hiddenView = self.textField.secureContainer {
           self.bodyView = hiddenView
           super.addSubview(hiddenView)
+        hiddenView.isUserInteractionEnabled = false
           hiddenView.translatesAutoresizingMaskIntoConstraints = false
           hiddenView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
           hiddenView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
@@ -109,8 +112,7 @@ extension UITextField {
         }).first else {
             return nil
         }
-        
+      container.isUserInteractionEnabled = true
         return container
     }
 }
-
