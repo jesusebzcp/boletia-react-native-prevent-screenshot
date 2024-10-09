@@ -25,16 +25,7 @@ public final class PreventScreenshotView : UIView {
   
   @objc var image: String = "" {
     didSet {
-      print("Image property set with value: \(image)") // Imprime el valor de la propiedad image
-      if let url = URL(string: image), let data = try? Data(contentsOf: url), let imageSource = UIImage(data: data) {
-        self.backgroundColor = UIColor(patternImage: imageSource)
-        print("Image successfully set as background from URL") // Imprime si la imagen se ha establecido correctamente desde URL
-      } else if let imageSource = UIImage(named: image) {
-        self.backgroundColor = UIColor(patternImage: imageSource)
-        print("Image successfully set as background from name") // Imprime si la imagen se ha establecido correctamente desde nombre
-      } else {
-        print("Failed to load image with name or URL: \(image)") // Imprime si la imagen no se pudo cargar
-      }
+      loadImageAsync(from: image)
     }
   }
 
@@ -52,6 +43,27 @@ public final class PreventScreenshotView : UIView {
   required init?(coder: NSCoder) {
       super.init(coder: coder)
       self.setup()
+  }
+  
+  private func loadImageAsync(from image: String) {
+    DispatchQueue.global(qos: .background).async { [weak self] in
+      var imageSource: UIImage? = nil
+
+      if let url = URL(string: image), let data = try? Data(contentsOf: url) {
+        imageSource = UIImage(data: data)
+      } else {
+        imageSource = UIImage(named: image)
+      }
+
+      DispatchQueue.main.async {
+        if let validImage = imageSource {
+          self?.backgroundColor = UIColor(patternImage: validImage)
+          print("Image successfully set as background")
+        } else {
+          print("Failed to load image with name or URL: \(image)")
+        }
+      }
+    }
   }
   
   private func setup() {
@@ -75,7 +87,7 @@ public final class PreventScreenshotView : UIView {
       if let hiddenView = self.textField.secureContainer {
           self.bodyView = hiddenView
           super.addSubview(hiddenView)
-        hiddenView.isUserInteractionEnabled = false
+          hiddenView.isUserInteractionEnabled = false
           hiddenView.translatesAutoresizingMaskIntoConstraints = false
           hiddenView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
           hiddenView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
@@ -88,19 +100,6 @@ public final class PreventScreenshotView : UIView {
   }
 
   
-
-  // Override addSubview method to add subviews to the secure container
-  public override func addSubview(_ view: UIView) {
-      self.bodyView?.addSubview(view)
-  }
-  
- 
-  public override func layoutSubviews() {
-      super.layoutSubviews()
-      self.bodyView?.layoutSubviews()
-  }
-  
-
 }
 
 
