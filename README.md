@@ -5,7 +5,7 @@
 ## Installation
 
 ```sh
-npm install react-native-prevent-screenshot
+npm install boletia-react-native-prevent-screenshot
 ```
 
 ## Usage
