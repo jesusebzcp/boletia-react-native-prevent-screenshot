@@ -17,11 +17,7 @@ export const PreventScreenshotView = ({
     if (Platform.OS !== 'android') {
       return;
     }
-    if (image) {
-      PreventScreenshotModuleAndroid.enableSecureView(image);
-    } else {
-      PreventScreenshotModuleAndroid.enabled(true);
-    }
+    PreventScreenshotModuleAndroid.enabled(true);
 
     return () => {
       PreventScreenshotModuleAndroid.disableSecureView();
