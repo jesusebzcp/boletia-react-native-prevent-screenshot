@@ -4,6 +4,7 @@
 
 
 RCT_EXPORT_VIEW_PROPERTY(image, NSString)
+RCT_EXPORT_VIEW_PROPERTY(resizeMode, NSString)
 
 
 @end

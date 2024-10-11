@@ -1,9 +1,10 @@
-import type { ViewStyle } from 'react-native';
+import type { ImageResizeMode, ViewStyle } from 'react-native';
 
 export type PreventScreenshotProps = {
   style: ViewStyle;
   image: string;
   children: any;
+  resizeMode?: ImageResizeMode;
 };
 
 export type PreventScreenshotViewProps = {
@@ -12,6 +13,7 @@ export type PreventScreenshotViewProps = {
   children: any;
   backgroundColor?: string;
   preventScreenshot?: boolean;
+  resizeMode?: ImageResizeMode;
 };
 
 export type PreventScreenshotModuleAndroidTypes = {

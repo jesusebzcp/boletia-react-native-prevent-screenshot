@@ -23,11 +23,20 @@ class PreventScreenshotViewManager: RCTViewManager {
 @objc(PreventScreenshotView)
 public final class PreventScreenshotView : UIView {
   
+  private var resizeModeBg : UIView.ContentMode = .scaleAspectFill
+  
   @objc var image: String = "" {
     didSet {
       loadImageAsync(from: image)
     }
   }
+  
+  @objc var resizeMode: String = "" {
+    didSet {
+      resizeModeBg = updateResizeMode(resizeMode)
+      }
+  }
+  
   private let textField = UITextField()
   private var bodyView: UIView?
   
@@ -45,11 +54,14 @@ public final class PreventScreenshotView : UIView {
   }
   
   private func setup() {
+    print(resizeModeBg)
+    print(resizeMode)
     
       // Configure the UITextField
+  
       self.textField.isSecureTextEntry = true
       self.textField.textColor = .white.withAlphaComponent(0.1)
-    self.textField.isUserInteractionEnabled = true
+      self.textField.isUserInteractionEnabled = true
       self.textField.translatesAutoresizingMaskIntoConstraints = false
       super.addSubview(self.textField)
 
@@ -77,25 +89,68 @@ public final class PreventScreenshotView : UIView {
   
   
   private func loadImageAsync(from image: String) {
-    DispatchQueue.global(qos: .background).async { [weak self] in
-      var imageSource: UIImage? = nil
+      DispatchQueue.global(qos: .background).async { [weak self] in
+          var imageSource: UIImage? = nil
+          
+         
+          if let url = URL(string: image), let data = try? Data(contentsOf: url) {
+              imageSource = UIImage(data: data)
+          } else {
+              imageSource = UIImage(named: image)
+          }
 
-      if let url = URL(string: image), let data = try? Data(contentsOf: url) {
-        imageSource = UIImage(data: data)
-      } else {
-        imageSource = UIImage(named: image)
-      }
+       
+          DispatchQueue.main.async {
+              guard let validImage = imageSource else {
+                  print("Failed to load image with name or URL: \(image)")
+                  return
+              }
 
-      DispatchQueue.main.async {
-        if let validImage = imageSource {
-          self?.backgroundColor = UIColor(patternImage: validImage)
-          print("Image successfully set as background")
-        } else {
-          print("Failed to load image with name or URL: \(image)")
-        }
+      
+              let backgroundImageView = UIImageView(image: validImage)
+              backgroundImageView.contentMode = .scaleAspectFill  // Ajusta la imagen para que se adapte a la vista sin distorsión
+              backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
+              backgroundImageView.clipsToBounds = true // Asegura que la imagen no se salga de los bordes
+
+        
+              self?.subviews.forEach { subview in
+                  if subview is UIImageView {
+                      subview.removeFromSuperview()
+                  }
+              }
+
+              if let strongSelf = self {
+                  strongSelf.insertSubview(backgroundImageView, at: 0)
+
+                
+                  NSLayoutConstraint.activate([
+                      backgroundImageView.leadingAnchor.constraint(equalTo: strongSelf.leadingAnchor),
+                      backgroundImageView.trailingAnchor.constraint(equalTo: strongSelf.trailingAnchor),
+                      backgroundImageView.topAnchor.constraint(equalTo: strongSelf.topAnchor),
+                      backgroundImageView.bottomAnchor.constraint(equalTo: strongSelf.bottomAnchor)
+                  ])
+              }
+
+              print("Image successfully set as responsive background")
+          }
       }
-    }
   }
+  
+  private func updateResizeMode(_ mode: String) -> UIView.ContentMode {
+     switch mode {
+     case "cover":
+       return .scaleAspectFill
+     case "contain":
+       return .scaleAspectFit
+     case "stretch":
+       return .scaleToFill
+     case "center":
+       return .center
+     default:
+       return .scaleAspectFill
+     }
+   }
+
   
   
 

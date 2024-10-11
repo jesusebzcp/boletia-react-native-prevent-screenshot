@@ -11,6 +11,7 @@ export const PreventScreenshotView = ({
   image,
   children,
   backgroundColor,
+  resizeMode,
 }: PreventScreenshotViewProps) => {
   useEffect(() => {
     if (Platform.OS !== 'android') {
@@ -33,7 +34,11 @@ export const PreventScreenshotView = ({
   }
 
   return (
-    <PreventScreenshotViewModule style={style ?? {}} image={image}>
+    <PreventScreenshotViewModule
+      style={style ?? {}}
+      image={image}
+      resizeMode={resizeMode}
+    >
       <View
         style={[
           styles.container,
